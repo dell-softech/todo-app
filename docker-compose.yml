@@ -13,11 +13,11 @@ services:
       DATABASE_URL: ${DATABASE_URL}
 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:17
-
     container_name: postgres
 
     environment:
@@ -29,7 +29,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d todo"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 5
