@@ -1,17 +1,13 @@
 # Terraform
 terraform/.terraform/
-terraform/.terraform.lock.hcl
-
-# Terraform state
 terraform/*.tfstate
-terraform/*.tfstate.backup
+terraform/*.tfstate.*
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
 
 # Python
 __pycache__/
 *.pyc
 
-# Environment
+# Secrets
 .env
-
-# VS Code
-.vscode/
