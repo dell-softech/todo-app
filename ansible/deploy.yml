@@ -1,0 +1,60 @@
+---
+- name: Deploy Todo App
+  hosts: web
+  become: yes
+  vars:
+    postgres_db: "tododb"
+    postgres_user: "todo_user"
+    postgres_password: "secure_password_here"
+    database_url: "postgresql://todo_user:secure_password_here@db:5432/tododb"
+
+  tasks:
+    - name: Remove existing directory if exists
+      file:
+        path: /opt/todo-app
+        state: absent
+      ignore_errors: yes
+
+    - name: Create application directory
+      file:
+        path: /opt/todo-app
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+
+    - name: Clone repository
+      git:
+        repo: https://github.com/dell-softech/todo-app.git
+        dest: /opt/todo-app
+        version: main
+        force: yes
+        update: yes
+
+    - name: Create .env file
+      copy:
+        dest: /opt/todo-app/.env
+        content: |
+          POSTGRES_DB={{ postgres_db }}
+          POSTGRES_USER={{ postgres_user }}
+          POSTGRES_PASSWORD={{ postgres_password }}
+          DATABASE_URL={{ database_url }}
+        owner: ubuntu
+        group: ubuntu
+        mode: "0600"
+
+    - name: Start application
+      shell: docker compose up -d
+      args:
+        chdir: /opt/todo-app
+      register: compose_result
+
+    - name: Show running containers
+      shell: docker compose ps
+      args:
+        chdir: /opt/todo-app
+      register: containers_status
+
+    - name: Display container status
+      debug:
+        msg: "{{ containers_status.stdout_lines }}"

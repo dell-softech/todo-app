@@ -1,0 +1,5 @@
+database_url: postgresql://postgres:postgres@db:5432/todo
+
+postgres_db: todo
+postgres_user: postgres
+postgres_password: postgres
